@@ -5,10 +5,11 @@ import { useScreening } from '../hooks/useScreening'
 export function ScreeningControls() {
   const [forceRefresh, setForceRefresh] = useState(false)
   const [maxStocks, setMaxStocks] = useState<number | null>(null)
-  const { progress } = useScreeningStore()
+  const { progress, stocks, clearResults, resetFilters } = useScreeningStore()
   const { start, stop } = useScreening()
 
   const isRunning = progress.status === 'running'
+  const hasResults = stocks.length > 0
 
   const handleStart = () => {
     if (isRunning) {
@@ -16,6 +17,12 @@ export function ScreeningControls() {
       return
     }
     start({ force_refresh: forceRefresh, max_stocks: maxStocks })
+  }
+
+  const handleReset = () => {
+    stop()
+    clearResults()
+    resetFilters()
   }
 
   return (
@@ -31,6 +38,15 @@ export function ScreeningControls() {
         >
           {isRunning ? '停止' : '割安株を探す'}
         </button>
+
+        {hasResults && !isRunning && (
+          <button
+            onClick={handleReset}
+            className="px-4 py-2.5 rounded-lg font-semibold text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all"
+          >
+            結果をリセット
+          </button>
+        )}
 
         <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
           <input

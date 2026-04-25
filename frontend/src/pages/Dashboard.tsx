@@ -13,7 +13,7 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchStocks()
-  }, [])
+  }, [fetchStocks])
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -41,10 +41,7 @@ export function Dashboard() {
         {stocks.length > 0 && (
           <TagSummary
             stocks={stocks}
-            onTagClick={(tag) => {
-              setFilter('candidateTag', tag)
-              fetchStocks()
-            }}
+            onTagClick={(tag) => setFilter('candidateTag', tag)}
           />
         )}
 

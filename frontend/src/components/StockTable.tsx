@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useScreeningStore } from '../store/screeningStore'
 import { ScoreBadge } from './ScoreBadge'
 import { CandidateTag } from './CandidateTag'
@@ -9,7 +10,39 @@ interface Props {
 }
 
 export function StockTable({ onSelectStock }: Props) {
-  const { stocks, totalStocks } = useScreeningStore()
+  const { stocks, filters } = useScreeningStore()
+
+  const displayed = useMemo(() => {
+    let result = stocks
+
+    if (filters.markets.length > 0) {
+      result = result.filter((s) => filters.markets.includes(s.market ?? ''))
+    }
+    if (filters.candidateTag) {
+      result = result.filter((s) => s.candidate_tag === filters.candidateTag)
+    }
+    if (filters.minScore > 0) {
+      result = result.filter((s) => s.composite_score >= filters.minScore)
+    }
+    if (filters.maxPer !== null) {
+      result = result.filter((s) => s.per == null || s.per <= filters.maxPer!)
+    }
+    if (filters.maxPbr !== null) {
+      result = result.filter((s) => s.pbr == null || s.pbr <= filters.maxPbr!)
+    }
+    if (filters.minDividend !== null) {
+      result = result.filter(
+        (s) => s.dividend_yield != null && s.dividend_yield * 100 >= filters.minDividend!,
+      )
+    }
+
+    const key = filters.sortBy as keyof StockResult
+    return [...result].sort((a, b) => {
+      const av = (a[key] as number) ?? 0
+      const bv = (b[key] as number) ?? 0
+      return filters.sortDir === 'desc' ? bv - av : av - bv
+    })
+  }, [stocks, filters])
 
   if (stocks.length === 0) {
     return (
@@ -24,7 +57,7 @@ export function StockTable({ onSelectStock }: Props) {
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
         <span className="text-sm font-medium text-slate-600">
-          {totalStocks} 銘柄中 {stocks.length} 件表示
+          {stocks.length} 銘柄中 {displayed.length} 件表示
         </span>
         <span className="text-xs text-slate-400">クリックで詳細表示</span>
       </div>
@@ -34,6 +67,7 @@ export function StockTable({ onSelectStock }: Props) {
             <tr className="bg-slate-50 border-b border-slate-100">
               <th className="text-left px-4 py-3 font-medium text-slate-500 whitespace-nowrap">銘柄</th>
               <th className="text-left px-4 py-3 font-medium text-slate-500">セクター</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-500">市場</th>
               <th className="text-right px-4 py-3 font-medium text-slate-500">スコア</th>
               <th className="text-center px-4 py-3 font-medium text-slate-500">候補</th>
               <th className="text-right px-4 py-3 font-medium text-slate-500">株価</th>
@@ -45,7 +79,7 @@ export function StockTable({ onSelectStock }: Props) {
             </tr>
           </thead>
           <tbody>
-            {stocks.map((stock: StockResult) => (
+            {displayed.map((stock: StockResult) => (
               <tr
                 key={stock.ticker}
                 onClick={() => onSelectStock(stock.ticker)}
@@ -56,6 +90,9 @@ export function StockTable({ onSelectStock }: Props) {
                   <div className="text-xs text-slate-400">{stock.ticker}</div>
                 </td>
                 <td className="px-4 py-3 text-slate-500 text-xs">{stock.sector ?? '-'}</td>
+                <td className="px-4 py-3">
+                  <MarketBadge market={stock.market} />
+                </td>
                 <td className="px-4 py-3 text-right">
                   <ScoreBadge score={stock.composite_score} size="sm" />
                 </td>
@@ -76,6 +113,21 @@ export function StockTable({ onSelectStock }: Props) {
         </table>
       </div>
     </div>
+  )
+}
+
+function MarketBadge({ market }: { market?: string }) {
+  if (!market) return <span className="text-slate-400 text-xs">-</span>
+  const colors: Record<string, string> = {
+    プライム: 'bg-blue-50 text-blue-600',
+    スタンダード: 'bg-green-50 text-green-600',
+    グロース: 'bg-orange-50 text-orange-600',
+  }
+  const cls = colors[market] ?? 'bg-slate-100 text-slate-500'
+  return (
+    <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${cls}`}>
+      {market}
+    </span>
   )
 }
 

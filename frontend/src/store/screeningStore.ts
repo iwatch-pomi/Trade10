@@ -12,6 +12,7 @@ interface ScreeningStore {
   setStocks: (stocks: StockResult[], total: number) => void
   setFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void
   resetFilters: () => void
+  clearResults: () => void
   setSelectedTicker: (ticker: string | null) => void
 }
 
@@ -57,6 +58,9 @@ export const useScreeningStore = create<ScreeningStore>((set) => ({
     set((s) => ({ filters: { ...s.filters, [key]: value } })),
 
   resetFilters: () => set({ filters: defaultFilters }),
+
+  clearResults: () =>
+    set({ stocks: [], totalStocks: 0, progress: defaultProgress }),
 
   setSelectedTicker: (ticker) => set({ selectedTicker: ticker }),
 }))

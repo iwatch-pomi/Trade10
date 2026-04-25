@@ -16,6 +16,13 @@ export async function analyzeBatch(
   return data
 }
 
+export async function getAllCachedStocks(): Promise<StockListResponse> {
+  const { data } = await api.get<StockListResponse>('/stocks', {
+    params: { limit: 5000, sort_by: 'composite_score', sort_dir: 'desc' },
+  })
+  return data
+}
+
 export async function getStocks(filters: FilterState): Promise<StockListResponse> {
   const params: Record<string, unknown> = {
     min_score: filters.minScore,

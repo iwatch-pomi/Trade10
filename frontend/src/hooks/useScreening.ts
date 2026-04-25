@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react'
-import { getTickers, analyzeBatch, getStocks } from '../api/client'
+import { getTickers, analyzeBatch, getAllCachedStocks } from '../api/client'
 import { useScreeningStore } from '../store/screeningStore'
 
 const BATCH_SIZE = 8
@@ -16,12 +16,12 @@ export function useScreening() {
 
   const fetchStocks = useCallback(async () => {
     try {
-      const result = await getStocks(filters)
+      const result = await getAllCachedStocks()
       setStocks(result.items, result.total)
     } catch (e) {
       console.error('Failed to fetch stocks', e)
     }
-  }, [filters, setStocks])
+  }, [setStocks])
 
   const start = useCallback(
     async (opts: { force_refresh?: boolean; max_stocks?: number | null }) => {

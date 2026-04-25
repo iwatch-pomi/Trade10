@@ -1,14 +1,7 @@
 import { useScreeningStore } from '../store/screeningStore'
-import { useScreening } from '../hooks/useScreening'
-import { useEffect } from 'react'
 
 export function FilterPanel() {
   const { filters, setFilter, resetFilters } = useScreeningStore()
-  const { fetchStocks } = useScreening()
-
-  useEffect(() => {
-    fetchStocks()
-  }, [filters])
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-4">

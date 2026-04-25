@@ -37,6 +37,7 @@ def init_db():
                 composite_score REAL DEFAULT 0,
                 candidate_tag   TEXT,
                 data_quality    TEXT DEFAULT 'minimal',
+                avg_volume      REAL,
                 raw_json        TEXT,
                 cached_at       TEXT
             );
@@ -51,10 +52,10 @@ def init_db():
                 status      TEXT DEFAULT 'queued'
             );
         """)
-        # Migrate existing tables: add market column if missing
-        try:
-            conn.execute("ALTER TABLE stock_cache ADD COLUMN market TEXT")
-            conn.commit()
-        except Exception:
-            pass  # column already exists
+        for col, typedef in [("market", "TEXT"), ("avg_volume", "REAL")]:
+            try:
+                conn.execute(f"ALTER TABLE stock_cache ADD COLUMN {col} {typedef}")
+                conn.commit()
+            except Exception:
+                pass  # column already exists
         conn.close()

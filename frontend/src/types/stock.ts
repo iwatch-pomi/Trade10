@@ -16,6 +16,7 @@ export interface StockResult {
   debt_to_equity?: number
   current_ratio?: number
   roe?: number
+  avg_volume?: number
   dividend_health_score: number
   composite_score: number
   candidate_tag?: string
@@ -55,6 +56,7 @@ export interface FilterState {
   maxPer: number | null
   maxPbr: number | null
   minDividend: number | null
+  minAvgVolume: number | null
   candidateTag: string | null
   markets: string[]
   sortBy: string

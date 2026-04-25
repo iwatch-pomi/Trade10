@@ -24,3 +24,10 @@ export function fmtDividend(v?: number): string {
   if (v == null) return '-'
   return (v * 100).toFixed(2) + '%'
 }
+
+export function fmtVolume(v?: number): string {
+  if (v == null) return '-'
+  if (v >= 1e8) return (v / 1e8).toFixed(1) + '億株'
+  if (v >= 1e4) return Math.round(v / 1e4) + '万株'
+  return v.toLocaleString('ja-JP') + '株'
+}

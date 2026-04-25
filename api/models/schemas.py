@@ -47,6 +47,7 @@ class StockResult(BaseModel):
     debt_to_equity: Optional[float] = None
     current_ratio: Optional[float] = None
     roe: Optional[float] = None
+    avg_volume: Optional[float] = None
     dividend_health_score: float = 0
     composite_score: float = 0
     candidate_tag: Optional[str] = None

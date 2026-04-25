@@ -58,6 +58,33 @@ export function FilterPanel() {
       </div>
 
       <div>
+        <label className="block text-xs text-slate-500 mb-1">
+          最低出来高（万株/日）
+        </label>
+        <input
+          type="number" min={1} step={1} placeholder="制限なし"
+          value={filters.minAvgVolume ?? ''}
+          onChange={(e) => setFilter('minAvgVolume', e.target.value ? Number(e.target.value) : null)}
+          className="w-full text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        />
+        <div className="flex gap-1 mt-1 flex-wrap">
+          {[1, 10, 100, 500].map((v) => (
+            <button
+              key={v}
+              onClick={() => setFilter('minAvgVolume', v)}
+              className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                filters.minAvgVolume === v
+                  ? 'bg-blue-500 text-white border-blue-500'
+                  : 'border-slate-200 text-slate-500 hover:border-blue-300'
+              }`}
+            >
+              {v}万
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
         <label className="block text-xs text-slate-500 mb-2">市場区分</label>
         <div className="flex flex-col gap-1">
           {['プライム', 'スタンダード', 'グロース'].map((m) => (
@@ -114,6 +141,7 @@ export function FilterPanel() {
           <option value="pbr">PBR</option>
           <option value="revenue_growth">成長率</option>
           <option value="dividend_yield">配当利回り</option>
+          <option value="avg_volume">平均出来高</option>
           <option value="market_cap">時価総額</option>
         </select>
         <div className="flex gap-2 mt-2">

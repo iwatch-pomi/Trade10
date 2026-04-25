@@ -143,6 +143,8 @@ def score_stock(info: dict) -> dict:
     else:
         data_quality = "minimal"
 
+    avg_volume = info.get("averageVolume") or info.get("averageVolume10days")
+
     return {
         "price": info.get("currentPrice") or info.get("regularMarketPrice"),
         "market_cap": info.get("marketCap"),
@@ -155,6 +157,7 @@ def score_stock(info: dict) -> dict:
         "current_ratio": current_ratio,
         "roe": info.get("returnOnEquity"),
         "eps": info.get("trailingEps"),
+        "avg_volume": avg_volume,
         "per_score": per_score,
         "pbr_score": pbr_score,
         "growth_score": growth_score,

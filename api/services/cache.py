@@ -33,12 +33,14 @@ def upsert_stock(ticker: str, name: str, sector: str, scores: dict, market: str 
                 ticker, name, sector, market, price, market_cap,
                 per, pbr, revenue_growth, profit_growth,
                 dividend_yield, debt_to_equity, current_ratio, roe, eps,
+                avg_volume,
                 per_score, pbr_score, growth_score, dividend_health_score,
                 composite_score, candidate_tag, data_quality, cached_at
             ) VALUES (
                 :ticker, :name, :sector, :market, :price, :market_cap,
                 :per, :pbr, :revenue_growth, :profit_growth,
                 :dividend_yield, :debt_to_equity, :current_ratio, :roe, :eps,
+                :avg_volume,
                 :per_score, :pbr_score, :growth_score, :dividend_health_score,
                 :composite_score, :candidate_tag, :data_quality, :cached_at
             )
@@ -49,6 +51,7 @@ def upsert_stock(ticker: str, name: str, sector: str, scores: dict, market: str 
                 revenue_growth=excluded.revenue_growth, profit_growth=excluded.profit_growth,
                 dividend_yield=excluded.dividend_yield, debt_to_equity=excluded.debt_to_equity,
                 current_ratio=excluded.current_ratio, roe=excluded.roe, eps=excluded.eps,
+                avg_volume=excluded.avg_volume,
                 per_score=excluded.per_score, pbr_score=excluded.pbr_score,
                 growth_score=excluded.growth_score,
                 dividend_health_score=excluded.dividend_health_score,
@@ -68,6 +71,7 @@ def get_all_stocks(
     max_per: Optional[float] = None,
     max_pbr: Optional[float] = None,
     min_dividend: Optional[float] = None,
+    min_avg_volume: Optional[float] = None,
     candidate_tag: Optional[str] = None,
     market: Optional[str] = None,
     sort_by: str = "composite_score",
@@ -77,7 +81,7 @@ def get_all_stocks(
 ) -> tuple[list[dict], int]:
     allowed_sort = {
         "composite_score", "per", "pbr", "revenue_growth",
-        "dividend_yield", "market_cap", "cached_at",
+        "dividend_yield", "market_cap", "avg_volume", "cached_at",
     }
     if sort_by not in allowed_sort:
         sort_by = "composite_score"
@@ -96,6 +100,9 @@ def get_all_stocks(
         min_div_decimal = min_dividend / 100
         conditions.append("(dividend_yield IS NOT NULL AND dividend_yield >= ?)")
         params.append(min_div_decimal)
+    if min_avg_volume is not None:
+        conditions.append("(avg_volume IS NOT NULL AND avg_volume >= ?)")
+        params.append(min_avg_volume)
     if candidate_tag:
         conditions.append("candidate_tag = ?")
         params.append(candidate_tag)

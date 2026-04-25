@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useScreeningStore } from '../store/screeningStore'
 import { ScoreBadge } from './ScoreBadge'
 import { CandidateTag } from './CandidateTag'
-import { fmtPrice, fmtMarketCap, fmtNum, fmtDividend, fmtPct } from '../utils/formatters'
+import { fmtPrice, fmtMarketCap, fmtNum, fmtDividend, fmtPct, fmtVolume } from '../utils/formatters'
 import type { StockResult } from '../types/stock'
 
 interface Props {
@@ -34,6 +34,10 @@ export function StockTable({ onSelectStock }: Props) {
       result = result.filter(
         (s) => s.dividend_yield != null && s.dividend_yield * 100 >= filters.minDividend!,
       )
+    }
+    if (filters.minAvgVolume !== null) {
+      const minVol = filters.minAvgVolume * 10000
+      result = result.filter((s) => s.avg_volume != null && s.avg_volume >= minVol)
     }
 
     const key = filters.sortBy as keyof StockResult
@@ -75,6 +79,7 @@ export function StockTable({ onSelectStock }: Props) {
               <th className="text-right px-4 py-3 font-medium text-slate-500">PBR</th>
               <th className="text-right px-4 py-3 font-medium text-slate-500">成長率</th>
               <th className="text-right px-4 py-3 font-medium text-slate-500">配当</th>
+              <th className="text-right px-4 py-3 font-medium text-slate-500">平均出来高</th>
               <th className="text-right px-4 py-3 font-medium text-slate-500">時価総額</th>
             </tr>
           </thead>
@@ -106,6 +111,7 @@ export function StockTable({ onSelectStock }: Props) {
                   <GrowthCell growth={stock.revenue_growth} />
                 </td>
                 <td className="px-4 py-3 text-right text-slate-700">{fmtDividend(stock.dividend_yield)}</td>
+                <td className="px-4 py-3 text-right text-slate-500 text-xs">{fmtVolume(stock.avg_volume)}</td>
                 <td className="px-4 py-3 text-right text-slate-500 text-xs">{fmtMarketCap(stock.market_cap)}</td>
               </tr>
             ))}

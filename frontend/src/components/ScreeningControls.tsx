@@ -48,12 +48,13 @@ export function ScreeningControls() {
         <input
           type="number"
           min={10}
-          max={500}
+          max={5000}
           placeholder="全銘柄"
           value={maxStocks ?? ''}
           onChange={(e) => setMaxStocks(e.target.value ? Number(e.target.value) : null)}
-          className="w-24 text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          className="w-28 text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-200"
         />
+        <span className="text-xs text-slate-400">（空白=市場区分に応じた全銘柄）</span>
       </div>
     </div>
   )

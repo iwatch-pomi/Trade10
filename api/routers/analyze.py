@@ -6,6 +6,7 @@ import asyncio
 from fastapi import APIRouter
 from pydantic import BaseModel
 from services.tse_stock_list import get_tse_stocks, get_stock_info_map
+from services.jpx_fetcher import invalidate_cache
 from services.yfinance_fetcher import fetch_batch_info
 from services.scorer import score_stock
 from services.demo_data import generate_stock_info
@@ -25,6 +26,14 @@ class AnalyzeRequest(BaseModel):
 def list_tickers():
     """Return full TSE ticker list for the frontend to drive batching."""
     return get_tse_stocks()
+
+
+@router.post("/api/tickers/refresh")
+def refresh_tickers():
+    """Invalidate the JPX ticker cache and re-fetch immediately."""
+    invalidate_cache()
+    stocks = get_tse_stocks()
+    return {"count": len(stocks)}
 
 
 @router.post("/api/analyze", response_model=list[StockResult])

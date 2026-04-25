@@ -28,6 +28,7 @@ export async function getStocks(filters: FilterState): Promise<StockListResponse
   if (filters.maxPbr !== null) params.max_pbr = filters.maxPbr
   if (filters.minDividend !== null) params.min_dividend = filters.minDividend
   if (filters.candidateTag) params.candidate_tag = filters.candidateTag
+  if (filters.markets.length > 0) params.market = filters.markets.join(',')
 
   const { data } = await api.get<StockListResponse>('/stocks', { params })
   return data

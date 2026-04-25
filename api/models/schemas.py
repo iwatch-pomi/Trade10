@@ -33,6 +33,7 @@ class StockResult(BaseModel):
     ticker: str
     name: Optional[str] = None
     sector: Optional[str] = None
+    market: Optional[str] = None
     price: Optional[float] = None
     market_cap: Optional[float] = None
     per: Optional[float] = None

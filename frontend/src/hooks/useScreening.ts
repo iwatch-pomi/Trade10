@@ -30,9 +30,13 @@ export function useScreening() {
 
       try {
         const allTickers = await getTickers()
+        const marketFiltered =
+          filters.markets.length > 0
+            ? allTickers.filter((t) => filters.markets.includes(t.market))
+            : allTickers
         const tickers = opts.max_stocks
-          ? allTickers.slice(0, opts.max_stocks)
-          : allTickers
+          ? marketFiltered.slice(0, opts.max_stocks)
+          : marketFiltered
 
         const batches = chunks(tickers.map((t) => t.ticker), BATCH_SIZE)
         const total = tickers.length
@@ -64,7 +68,7 @@ export function useScreening() {
         console.error('Screening failed', e)
       }
     },
-    [setProgress, addStocks],
+    [setProgress, addStocks, filters],
   )
 
   const stop = useCallback(() => {

@@ -2,6 +2,7 @@ export interface StockResult {
   ticker: string
   name?: string
   sector?: string
+  market?: string
   price?: number
   market_cap?: number
   per?: number
@@ -36,6 +37,7 @@ export interface TickerInfo {
   ticker: string
   name: string
   sector: string
+  market: string
 }
 
 export type JobStatus = 'idle' | 'running' | 'completed' | 'failed'
@@ -54,6 +56,7 @@ export interface FilterState {
   maxPbr: number | null
   minDividend: number | null
   candidateTag: string | null
+  markets: string[]
   sortBy: string
   sortDir: 'asc' | 'desc'
 }

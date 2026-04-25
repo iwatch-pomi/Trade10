@@ -21,6 +21,7 @@ const defaultFilters: FilterState = {
   maxPbr: null,
   minDividend: null,
   candidateTag: null,
+  markets: [],
   sortBy: 'composite_score',
   sortDir: 'desc',
 }

@@ -24,26 +24,27 @@ def is_fresh(ticker: str, ttl_hours: int = CACHE_TTL_HOURS) -> bool:
         return False
 
 
-def upsert_stock(ticker: str, name: str, sector: str, scores: dict):
+def upsert_stock(ticker: str, name: str, sector: str, scores: dict, market: str = ""):
     now = datetime.utcnow().isoformat()
     with _write_lock:
         conn = get_conn()
         conn.execute("""
             INSERT INTO stock_cache (
-                ticker, name, sector, price, market_cap,
+                ticker, name, sector, market, price, market_cap,
                 per, pbr, revenue_growth, profit_growth,
                 dividend_yield, debt_to_equity, current_ratio, roe, eps,
                 per_score, pbr_score, growth_score, dividend_health_score,
                 composite_score, candidate_tag, data_quality, cached_at
             ) VALUES (
-                :ticker, :name, :sector, :price, :market_cap,
+                :ticker, :name, :sector, :market, :price, :market_cap,
                 :per, :pbr, :revenue_growth, :profit_growth,
                 :dividend_yield, :debt_to_equity, :current_ratio, :roe, :eps,
                 :per_score, :pbr_score, :growth_score, :dividend_health_score,
                 :composite_score, :candidate_tag, :data_quality, :cached_at
             )
             ON CONFLICT(ticker) DO UPDATE SET
-                name=excluded.name, sector=excluded.sector, price=excluded.price,
+                name=excluded.name, sector=excluded.sector, market=excluded.market,
+                price=excluded.price,
                 market_cap=excluded.market_cap, per=excluded.per, pbr=excluded.pbr,
                 revenue_growth=excluded.revenue_growth, profit_growth=excluded.profit_growth,
                 dividend_yield=excluded.dividend_yield, debt_to_equity=excluded.debt_to_equity,
@@ -55,7 +56,7 @@ def upsert_stock(ticker: str, name: str, sector: str, scores: dict):
                 candidate_tag=excluded.candidate_tag,
                 data_quality=excluded.data_quality, cached_at=excluded.cached_at
         """, {
-            "ticker": ticker, "name": name, "sector": sector,
+            "ticker": ticker, "name": name, "sector": sector, "market": market,
             "cached_at": now, **scores,
         })
         conn.commit()
@@ -68,6 +69,7 @@ def get_all_stocks(
     max_pbr: Optional[float] = None,
     min_dividend: Optional[float] = None,
     candidate_tag: Optional[str] = None,
+    market: Optional[str] = None,
     sort_by: str = "composite_score",
     sort_dir: str = "desc",
     limit: int = 100,
@@ -97,6 +99,12 @@ def get_all_stocks(
     if candidate_tag:
         conditions.append("candidate_tag = ?")
         params.append(candidate_tag)
+    if market:
+        market_list = [m.strip() for m in market.split(",") if m.strip()]
+        if market_list:
+            placeholders = ",".join("?" * len(market_list))
+            conditions.append(f"market IN ({placeholders})")
+            params.extend(market_list)
 
     where = " AND ".join(conditions)
     conn = get_conn()

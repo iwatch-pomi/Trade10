@@ -18,6 +18,7 @@ def init_db():
                 ticker          TEXT PRIMARY KEY,
                 name            TEXT,
                 sector          TEXT,
+                market          TEXT,
                 price           REAL,
                 market_cap      REAL,
                 per             REAL,
@@ -50,5 +51,10 @@ def init_db():
                 status      TEXT DEFAULT 'queued'
             );
         """)
-        conn.commit()
+        # Migrate existing tables: add market column if missing
+        try:
+            conn.execute("ALTER TABLE stock_cache ADD COLUMN market TEXT")
+            conn.commit()
+        except Exception:
+            pass  # column already exists
         conn.close()

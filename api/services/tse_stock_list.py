@@ -13,6 +13,7 @@ def get_tse_stocks() -> list[dict]:
                 "ticker": f"{row['ticker'].strip()}.T",
                 "name": row["name"].strip(),
                 "sector": row["sector"].strip(),
+                "market": row.get("market", "").strip(),
             })
     return stocks
 

@@ -55,7 +55,7 @@ async def analyze_batch(req: AnalyzeRequest):
             if not info:
                 info = generate_stock_info(ticker, meta.get("sector", ""))
             scores = score_stock(info)
-            cache.upsert_stock(ticker, meta.get("name", ""), meta.get("sector", ""), scores)
+            cache.upsert_stock(ticker, meta.get("name", ""), meta.get("sector", ""), scores, meta.get("market", ""))
             cached = cache.get_stock(ticker)
             if cached:
                 results.append(cached)

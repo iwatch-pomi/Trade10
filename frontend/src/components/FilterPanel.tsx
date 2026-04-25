@@ -65,6 +65,33 @@ export function FilterPanel() {
       </div>
 
       <div>
+        <label className="block text-xs text-slate-500 mb-2">市場区分</label>
+        <div className="flex flex-col gap-1">
+          {['プライム', 'スタンダード', 'グロース'].map((m) => (
+            <label key={m} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filters.markets.includes(m)}
+                onChange={(e) => {
+                  const next = e.target.checked
+                    ? [...filters.markets, m]
+                    : filters.markets.filter((x) => x !== m)
+                  setFilter('markets', next)
+                }}
+                className="accent-blue-500"
+              />
+              <span className="text-sm text-slate-600">{m}</span>
+            </label>
+          ))}
+          {filters.markets.length > 0 && (
+            <p className="text-xs text-slate-400 mt-0.5">
+              ※スクリーニング時も選択市場のみ対象
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div>
         <label className="block text-xs text-slate-500 mb-2">候補タグ</label>
         <div className="flex flex-col gap-1">
           {[null, '2x候補', '10x候補'].map((tag) => (

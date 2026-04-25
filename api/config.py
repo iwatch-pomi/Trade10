@@ -30,8 +30,8 @@ SQLITE_DB_PATH = "/tmp/stocks.db" if _ON_VERCEL else os.path.join(BASE_DIR, "dat
 
 JPX_CACHE_TTL_HOURS = 24
 
-# CORS — allow all origins on Vercel (restrict via vercel.json if needed)
-FRONTEND_ORIGINS = ["*"] if _ON_VERCEL else [
+# CORS origins (credentials=True requires explicit origins, not "*")
+FRONTEND_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]

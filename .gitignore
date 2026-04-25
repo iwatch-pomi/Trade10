@@ -6,9 +6,8 @@ __pycache__/
 *.egg-info/
 .env
 .venv/
-backend/data/cache.db
-backend/data/stocks.db
 api/data/stocks.db
+api/data/cache.db
 __pycache__
 
 node_modules/

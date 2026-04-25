@@ -32,19 +32,20 @@ export interface StockListResponse {
   total: number
 }
 
-export type JobStatus = 'queued' | 'running' | 'completed' | 'failed'
+export interface TickerInfo {
+  ticker: string
+  name: string
+  sector: string
+}
 
-export interface ScreenJob {
-  job_id: string
+export type JobStatus = 'idle' | 'running' | 'completed' | 'failed'
+
+export interface ScreeningProgress {
   status: JobStatus
   total: number
   processed: number
-  failed: number
   pct: number
-  started_at: string
-  finished_at?: string
-  error?: string
-  current_ticker?: string
+  currentTicker?: string
 }
 
 export interface FilterState {

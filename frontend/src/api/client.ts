@@ -1,19 +1,18 @@
 import axios from 'axios'
-import type { ScreenJob, StockListResponse, StockDetail, FilterState } from '../types/stock'
+import type { StockListResponse, StockDetail, StockResult, TickerInfo, FilterState } from '../types/stock'
 
 const api = axios.create({ baseURL: '/api' })
 
-export async function startScreening(opts: {
-  force_refresh?: boolean
-  batch_size?: number
-  max_stocks?: number | null
-}): Promise<ScreenJob> {
-  const { data } = await api.post<ScreenJob>('/screen/start', opts)
+export async function getTickers(): Promise<TickerInfo[]> {
+  const { data } = await api.get<TickerInfo[]>('/tickers')
   return data
 }
 
-export async function getJobStatus(jobId: string): Promise<ScreenJob> {
-  const { data } = await api.get<ScreenJob>(`/screen/status/${jobId}`)
+export async function analyzeBatch(
+  tickers: string[],
+  force_refresh = false,
+): Promise<StockResult[]> {
+  const { data } = await api.post<StockResult[]>('/analyze', { tickers, force_refresh })
   return data
 }
 

@@ -8,6 +8,8 @@ __pycache__/
 .venv/
 backend/data/cache.db
 backend/data/stocks.db
+api/data/stocks.db
+__pycache__
 
 node_modules/
 dist/

@@ -5,13 +5,16 @@ import { useScreening } from '../hooks/useScreening'
 export function ScreeningControls() {
   const [forceRefresh, setForceRefresh] = useState(false)
   const [maxStocks, setMaxStocks] = useState<number | null>(null)
-  const { job } = useScreeningStore()
-  const { start } = useScreening()
+  const { progress } = useScreeningStore()
+  const { start, stop } = useScreening()
 
-  const isRunning = job?.status === 'running' || job?.status === 'queued'
+  const isRunning = progress.status === 'running'
 
   const handleStart = () => {
-    if (isRunning) return
+    if (isRunning) {
+      stop()
+      return
+    }
     start({ force_refresh: forceRefresh, max_stocks: maxStocks })
   }
 
@@ -20,14 +23,13 @@ export function ScreeningControls() {
       <div className="flex items-center gap-3 flex-1">
         <button
           onClick={handleStart}
-          disabled={isRunning}
           className={`px-5 py-2.5 rounded-lg font-semibold text-sm transition-all ${
             isRunning
-              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+              ? 'bg-red-500 hover:bg-red-600 text-white shadow-sm'
               : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'
           }`}
         >
-          {isRunning ? '実行中...' : '割安株を探す'}
+          {isRunning ? '停止' : '割安株を探す'}
         </button>
 
         <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
